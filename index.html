@@ -310,7 +310,7 @@ footer p{margin:0 0 10px}
 "use strict";
 
 /* ===================== STAŁE DO PODMIANY ===================== */
-const FORM_ENDPOINT = ""; // TODO: podmień — adres, na który POST-uje formularz (np. Vercel Function / Formspree)
+const FORM_ENDPOINT = "/api/lead"; // Vercel Function w tym repo (api/lead.js), zapisuje do Neon Postgres
 const ANALYTICS_ENDPOINT = ""; // TODO: podmień — endpoint sendBeacon; puste = brak analityki
 const CONTACT_EMAIL = "kontakt@example.pl"; // TODO: podmień — adres kontaktowy / mailto fallback
 const ADMIN_NAME = "OPERATOR_NAME"; // TODO: podmień — administrator danych w rozumieniu RODO (imię/nazwisko lub nazwa)

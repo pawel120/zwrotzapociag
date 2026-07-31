@@ -8,7 +8,7 @@ Wszystko w bloku `STAŁE DO PODMIANY` na górze `<script>` (szukaj `// TODO: pod
 
 | Stała | Co to jest |
 |---|---|
-| `FORM_ENDPOINT` | URL, na który formularz robi `POST` (JSON). Puste = formularz i tak pokaże ekran sukcesu bez wysyłki (tryb offline/demo). |
+| `FORM_ENDPOINT` | URL, na który formularz robi `POST` (JSON). Domyślnie `/api/lead` — Vercel Function w tym repo (patrz sekcja „Backend formularza”). Puste = ekran sukcesu bez wysyłki (tryb offline/demo). |
 | `ANALYTICS_ENDPOINT` | URL do `navigator.sendBeacon`. Puste = `track()` nic nie robi (no-op). |
 | `CONTACT_EMAIL` | Adres kontaktowy — używany w stopce (RODO) i jako `mailto:` fallback przy błędzie sieci formularza. |
 | `ADMIN_NAME` | Nazwa/imię administratora danych do klauzuli RODO w stopce. |
@@ -35,6 +35,27 @@ Każda karta: `id`, `requires(s)` (funkcja: które checkboxy z Kroku 2 muszą by
 Próg 16 zł w podpowiedzi przy polu `cena` (stała `PROG_MINIMALNY_ZL` w skrypcie) to ten sam fakt co karta „Uwaga: próg minimalny” w `RULES.cardsA` — jeśli zmienisz jedno, zmień i drugie.
 
 Musisz sam postawić endpoint (np. lekka Vercel Function), który przyjmuje `POST` i zapisuje zdarzenia — ten plik tylko je wysyła.
+
+## Backend formularza (`api/lead.js`)
+
+Formularz POST-uje na `/api/lead` — Vercel Function w tym repo (Node.js, zero-config, wykryta automatycznie z katalogu `/api`). Zapisuje zgłoszenie do Postgresa (Neon, przez Vercel Marketplace — nie ręczne SQL na własnym serwerze).
+
+**Provisioning (jednorazowo, w dashboardzie Vercel):**
+
+1. Projekt na vercel.com → zakładka **Storage** → **Create Database** / **Marketplace Database** → wybierz **Neon**.
+2. Vercel sam tworzy bazę i dodaje zmienną środowiskową `DATABASE_URL` do projektu (wszystkie środowiska).
+3. Redeploy (Vercel robi to zwykle automatycznie po dodaniu zmiennej; jak nie — Deployments → ... → Redeploy).
+
+Tabelę `leads` tworzy sam kod (`CREATE TABLE IF NOT EXISTS` przy każdym wywołaniu) — nie trzeba ręcznej migracji.
+
+**Podgląd zgłoszeń:** Neon dashboard → SQL Editor:
+```sql
+select * from leads order by created_at desc;
+```
+
+**Pola w tabeli:** `przewoznik`, `pociag`, `podroz_data`, `cena` (może być `null`), `email`, `zakres` (`diy` albo `pelna_obsluga`), `created_at`. E-mail zapisuje się zawsze, niezależnie od ceny biletu — także przy cenie poniżej progu 16 zł (patrz `cenaNote` w `index.html`), bo ma się przydać do newslettera.
+
+Jeśli `DATABASE_URL` nie jest ustawione, endpoint zwraca błąd 500 zamiast cicho gubić zgłoszenia — front-end w takiej sytuacji pokaże komunikat sieciowy z fallbackiem `mailto:`.
 
 ## Deploy na Vercel
 
