@@ -137,9 +137,10 @@ input:focus,select:focus{border-color:var(--amber)}
 .err.show{display:block}
 .radio-group{display:grid;gap:10px}
 .radio-opt{background:var(--bg2);border:2px solid var(--line);padding:14px;display:flex;gap:10px}
-.radio-opt input{margin-top:4px}
-.radio-opt.waitlist{border-style:dashed}
-.radio-opt .tag{display:inline-block;font-size:11px;font-weight:800;color:var(--amber);border:1px solid var(--amber);padding:1px 6px;margin-left:6px;letter-spacing:.03em}
+.radio-opt input{margin-top:4px;flex:none}
+.radio-opt.waitlist{border-style:dashed;flex-direction:column;gap:10px}
+.radio-opt .optrow{display:flex;gap:10px}
+.soon-badge{display:inline-block;align-self:flex-start;background:var(--amber);color:var(--amber-text);font-weight:800;font-size:20px;letter-spacing:.05em;padding:4px 14px}
 .success-box{background:var(--bg3);border:2px solid var(--amber);padding:20px;font-weight:700}
 footer{padding:32px 0 60px;font-size:13px;color:var(--muted)}
 footer p{margin:0 0 10px}
@@ -218,11 +219,15 @@ footer p{margin:0 0 10px}
 
 <section>
   <div class="wrap">
-    <h2>Ściąga — pełny katalog</h2>
-    <p class="muted">Wszystko z sprawdzarki, w jednym miejscu, do zapisania.</p>
-    <div id="cheatsheet"></div>
-    <!-- TODO: zweryfikować terminy w aktualnym regulaminie przewoźnika -->
-    <p class="muted">Terminy sprawdź w regulaminie swojego przewoźnika.</p>
+    <details id="cheatsheetBlock">
+      <summary>Ściąga — pełny katalog w jednym miejscu (rozwiń)</summary>
+      <div style="padding:0 18px 18px">
+        <p class="muted">To samo co w sprawdzarce, w formie tabel do zapisania — jeśli już wiesz, czego szukasz.</p>
+        <div id="cheatsheet"></div>
+        <!-- TODO: zweryfikować terminy w aktualnym regulaminie przewoźnika -->
+        <p class="muted">Terminy sprawdź w regulaminie swojego przewoźnika.</p>
+      </div>
+    </details>
   </div>
 </section>
 
@@ -274,21 +279,24 @@ footer p{margin:0 0 10px}
         <p class="err" id="err_email">Podaj poprawny adres e-mail.</p>
       </div>
       <div class="field">
-        <label id="zakresLabel">Zakres pomocy</label>
+        <label id="zakresLabel">Zakres pomocy — wybierz jedną opcję</label>
         <div class="radio-group" role="radiogroup" aria-labelledby="zakresLabel">
           <div class="radio-opt">
             <input type="radio" id="zakres_diy" name="zakres" value="diy" required>
-            <label for="zakres_diy" style="margin:0;font-weight:600">
-              Przyślij mi gotowe zgłoszenie — złożę je sam
-              <br><span class="muted" style="font-weight:400">Dostaniesz tekst do wklejenia i instrukcję. Za darmo.</span>
+            <label for="zakres_diy" style="margin:0">
+              <b>Opcja 1: Przyślij mi gotowe zgłoszenie</b>
+              <br><span class="muted" style="font-weight:400">Złożysz je sam. Dostaniesz gotowy tekst do wklejenia i instrukcję krok po kroku. Za darmo, bez żadnych zobowiązań.</span>
             </label>
           </div>
           <div class="radio-opt waitlist">
-            <input type="radio" id="zakres_pelna" name="zakres" value="pelna_obsluga" required>
-            <label for="zakres_pelna" style="margin:0;font-weight:600">
-              Chcę, żeby ktoś zrobił to za mnie od początku do końca <span class="tag">Lista oczekujących</span>
-              <br><span class="muted" style="font-weight:400">Zapiszę Cię na listę. Ta opcja jeszcze nie działa — odezwę się, gdy będzie gotowa, i powiem, na jakich zasadach.</span>
-            </label>
+            <div class="soon-badge">WKRÓTCE</div>
+            <div class="optrow">
+              <input type="radio" id="zakres_pelna" name="zakres" value="pelna_obsluga" required>
+              <label for="zakres_pelna" style="margin:0">
+                <b>Opcja 2: Niech ktoś zrobi to za mnie od A do Z</b>
+                <br><span class="muted" style="font-weight:400">Ta usługa jeszcze nie działa. Zaznacz, jeśli interesowałaby Cię taka opcja — zapiszę Cię na listę i odezwę się, gdy będzie gotowa. Bez znanej jeszcze ceny i bez terminu.</span>
+              </label>
+            </div>
           </div>
         </div>
         <p class="err" id="err_zakres">Wybierz jedną z dwóch opcji.</p>
