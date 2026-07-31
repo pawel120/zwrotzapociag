@@ -9,7 +9,7 @@ Wszystko w bloku `STAŁE DO PODMIANY` na górze `<script>` (szukaj `// TODO: pod
 | Stała | Co to jest |
 |---|---|
 | `FORM_ENDPOINT` | URL, na który formularz robi `POST` (JSON). Domyślnie `/api/lead` — Vercel Function w tym repo (patrz sekcja „Backend formularza”). Puste = ekran sukcesu bez wysyłki (tryb offline/demo). |
-| `ANALYTICS_ENDPOINT` | URL do `navigator.sendBeacon`. Puste = `track()` nic nie robi (no-op). |
+| `ANALYTICS_ENDPOINT` | URL do `navigator.sendBeacon`. Domyślnie `/api/track` (patrz „Backend formularza” / analityka niżej). Puste = `track()` nic nie robi (no-op). |
 | `CONTACT_EMAIL` | Adres kontaktowy — używany w stopce (RODO) i jako `mailto:` fallback przy błędzie sieci formularza. |
 | `ADMIN_NAME` | Nazwa/imię administratora danych do klauzuli RODO w stopce. |
 
@@ -34,7 +34,13 @@ Każda karta: `id`, `requires(s)` (funkcja: które checkboxy z Kroku 2 muszą by
 
 Próg 16 zł w podpowiedzi przy polu `cena` (stała `PROG_MINIMALNY_ZL` w skrypcie) to ten sam fakt co karta „Uwaga: próg minimalny” w `RULES.cardsA` — jeśli zmienisz jedno, zmień i drugie.
 
-Musisz sam postawić endpoint (np. lekka Vercel Function), który przyjmuje `POST` i zapisuje zdarzenia — ten plik tylko je wysyła.
+Endpoint: `api/track.js` (Vercel Function, ta sama baza Neon co formularz, osobna tabela `events`: `event`, `path`, `client_time`, `created_at`). Tabela tworzy się sama przy pierwszym zapisie.
+
+**Odczyt lejka konwersji** (Neon SQL Editor):
+```sql
+select event, count(*) from events group by event order by count(*) desc;
+```
+Porównaj `checker_result` (ile osób doszło do wyniku) z `form_submit` (ile zostawiło maila) — to jest główna liczba z tego MVP.
 
 ## Backend formularza (`api/lead.js`)
 
