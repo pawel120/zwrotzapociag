@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Opóźniony pociąg? Sprawdź, co Ci przysługuje</title>
+<meta name="description" content="Sprawdzarka praw pasażera PKP i przewoźników regionalnych po opóźnieniu, odwołaniu kursu, ZKA lub braku udogodnień.">
+<meta name="robots" content="noindex, nofollow">
+<style>
+:root{
+  --bg:#10141a;
+  --bg2:#181f28;
+  --bg3:#1f2937;
+  --line:#31404f;
+  --text:#eef2f6;
+  --muted:#aeb9c4;
+  --amber:#ffc233;
+  --amber-text:#10141a;
+  --danger-bg:#2a1608;
+  --danger-line:#ffc233;
+  --focus:#7fd1ff;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  line-height:1.45;
+  font-size:17px;
+  -webkit-font-smoothing:antialiased;
+}
+img,svg{max-width:100%}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+section{padding:48px 0;border-bottom:1px solid var(--line)}
+section:last-of-type{border-bottom:none}
+h1,h2,h3{font-weight:800;letter-spacing:-.01em;margin:0 0 12px}
+h1{font-size:clamp(28px,7vw,42px);text-transform:none}
+h2{font-size:clamp(22px,5vw,28px);border-left:6px solid var(--amber);padding-left:12px}
+h3{font-size:18px;margin-bottom:6px}
+p{margin:0 0 14px}
+.muted{color:var(--muted)}
+a{color:var(--amber)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,[tabindex]:focus-visible{
+  outline:3px solid var(--focus);outline-offset:2px;
+}
+.btn{
+  display:inline-block;
+  background:var(--amber);
+  color:var(--amber-text);
+  border:2px solid var(--amber);
+  font-weight:800;
+  font-size:17px;
+  padding:14px 22px;
+  cursor:pointer;
+  text-decoration:none;
+  text-align:center;
+}
+.btn:hover{background:#ffd35c}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-ghost{
+  background:transparent;color:var(--text);border:2px solid var(--line);font-weight:700;
+}
+.btn-ghost:hover{border-color:var(--amber)}
+.hero{padding-top:40px}
+.quicklink{display:inline-block;font-size:14px;font-weight:700;color:var(--amber);text-decoration:underline;margin-bottom:14px}
+.hero p.lead{font-size:19px;color:var(--muted);max-width:52ch}
+.step-badge{
+  display:inline-block;font-size:13px;font-weight:800;color:var(--amber);
+  border:1px solid var(--amber);padding:2px 8px;margin-bottom:10px;letter-spacing:.04em;
+}
+.choice-grid{display:grid;grid-template-columns:1fr;gap:14px;margin:18px 0}
+@media(min-width:640px){.choice-grid{grid-template-columns:1fr 1fr}}
+.choice-card{
+  background:var(--bg2);border:2px solid var(--line);padding:18px;text-align:left;
+  color:var(--text);font-family:inherit;cursor:pointer;width:100%;
+}
+.choice-card:hover{border-color:var(--amber)}
+.choice-card.active{border-color:var(--amber);background:var(--bg3)}
+.choice-card b{display:block;font-size:19px;margin-bottom:6px}
+.choice-card span{color:var(--muted);font-size:14px}
+.note{
+  background:var(--bg2);border-left:4px solid var(--amber);padding:10px 14px;font-size:14px;color:var(--muted);margin:10px 0 0;
+}
+.check-grid{display:grid;grid-template-columns:1fr;gap:10px;margin:16px 0}
+@media(min-width:640px){.check-grid{grid-template-columns:1fr 1fr}}
+.check-item{
+  display:flex;gap:10px;align-items:flex-start;background:var(--bg2);border:1px solid var(--line);padding:12px;
+}
+.check-item input{margin-top:4px;width:18px;height:18px;flex:none}
+.check-item label{cursor:pointer;font-size:15px}
+.stepnav{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}
+.card{background:var(--bg2);border:1px solid var(--line);border-left:5px solid var(--amber);padding:16px 18px;margin-bottom:14px}
+.card h3{color:var(--text)}
+.card .evi{font-size:14px;color:var(--muted);margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+.card .evi b{color:var(--text)}
+.warn-block{
+  background:var(--danger-bg);
+  border:3px solid var(--danger-line);
+  padding:22px;
+  margin:22px 0;
+}
+.warn-block p{margin:0 0 12px}
+.warn-block p:last-child{margin-bottom:0}
+.warn-block strong{color:var(--amber)}
+.result-empty{color:var(--muted);font-style:italic}
+details{background:var(--bg2);border:2px solid var(--amber);margin:20px 0}
+summary{
+  cursor:pointer;font-weight:800;padding:16px 18px;list-style:none;display:flex;justify-content:space-between;align-items:center;
+}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:22px;color:var(--amber)}
+details[open] summary::after{content:"–"}
+.check-list{padding:0 18px 18px;margin:0}
+.check-list li{margin-bottom:10px;list-style:none;padding-left:28px;position:relative}
+.check-list li::before{content:"☐";position:absolute;left:0;color:var(--amber);font-size:18px}
+table{width:100%;border-collapse:collapse;margin:14px 0 24px;font-size:14px}
+caption{text-align:left;font-weight:800;margin-bottom:8px;font-size:15px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--bg3);font-size:13px;text-transform:uppercase;letter-spacing:.03em}
+.table-scroll{overflow-x:auto;border:1px solid var(--line)}
+.table-scroll table{border:none;margin:0}
+.tiles{display:grid;grid-template-columns:1fr;gap:14px;margin-top:10px}
+@media(min-width:640px){.tiles{grid-template-columns:1fr 1fr}}
+.tile{background:var(--bg2);border:1px solid var(--line);border-top:4px solid var(--amber);padding:16px}
+.tile .num{color:var(--amber);font-weight:800;font-size:13px}
+label{display:block;font-weight:700;margin-bottom:6px;font-size:14px}
+.field{margin-bottom:18px}
+input[type=text],input[type=date],input[type=number],input[type=email],select{
+  width:100%;background:var(--bg2);border:2px solid var(--line);color:var(--text);
+  padding:12px;font-size:16px;font-family:inherit;
+}
+input:focus,select:focus{border-color:var(--amber)}
+.err{color:#ff9d9d;font-size:13px;margin-top:6px;display:none}
+.err.show{display:block}
+.radio-group{display:grid;gap:10px}
+.radio-opt{background:var(--bg2);border:2px solid var(--line);padding:14px;display:flex;gap:10px}
+.radio-opt input{margin-top:4px}
+.radio-opt.waitlist{border-style:dashed}
+.radio-opt .tag{display:inline-block;font-size:11px;font-weight:800;color:var(--amber);border:1px solid var(--amber);padding:1px 6px;margin-left:6px;letter-spacing:.03em}
+.success-box{background:var(--bg3);border:2px solid var(--amber);padding:20px;font-weight:700}
+footer{padding:32px 0 60px;font-size:13px;color:var(--muted)}
+footer p{margin:0 0 10px}
+.skip{position:absolute;left:-999px;top:0;background:var(--amber);color:#000;padding:10px;z-index:10}
+.skip:focus{left:10px;top:10px}
+</style>
+</head>
+<body>
+<a class="skip" href="#sprawdzarka">Przejdź do sprawdzarki</a>
+
+<section class="hero">
+  <div class="wrap">
+    <a href="#sprawdzarka" class="quicklink" id="ctaTop">Nie chcesz czytać? Sprawdź w 30 sekund →</a>
+    <h1>Opóźniony, odwołany, bez klimy? Sprawdź, co Ci przysługuje.</h1>
+    <p class="lead">Trzy pytania. Bez zakładania konta. Odpowiedź na podstawie przepisów, nie na wyczucie.</p>
+    <a href="#sprawdzarka" class="btn" id="ctaHero">Sprawdź teraz</a>
+  </div>
+</section>
+
+<section id="sprawdzarka">
+  <div class="wrap">
+    <h2>Sprawdzarka</h2>
+
+    <div id="step1">
+      <span class="step-badge">Krok 1 / 3</span>
+      <h3>Jakim pociągiem jechałeś?</h3>
+      <div class="choice-grid" role="group" aria-label="Rodzaj pociągu">
+        <button type="button" class="choice-card" id="choiceA" data-path="A">
+          <b>Dalekobieżny</b>
+          <span>EIP, EIC, IC, TLK, interREGIO, ŁKA Sprinter lub pociąg międzynarodowy</span>
+        </button>
+        <button type="button" class="choice-card" id="choiceB" data-path="B">
+          <b>Regionalny / osobowy</b>
+          <span>Koleje Śląskie, Polregio, Koleje Dolnośląskie, Koleje Mazowieckie, Koleje Małopolskie, Koleje Wielkopolskie, Arriva, ŁKA, SKM Warszawa, PKP SKM Trójmiasto, WKD</span>
+        </button>
+      </div>
+      <p class="note">Wyjątek: pociągi dalekobieżne uruchamiane przez przewoźników regionalnych (np. „Słoneczny” Kolei Mazowieckich) traktuje się jak A.</p>
+    </div>
+
+    <div id="step2" style="display:none">
+      <span class="step-badge">Krok 2 / 3</span>
+      <h3>Co się stało?</h3>
+      <p class="muted">Zaznacz wszystko, co dotyczy Twojej podróży.</p>
+      <div class="check-grid" id="eventGrid"></div>
+      <div class="stepnav">
+        <button type="button" class="btn-ghost" id="backTo1">Wstecz</button>
+        <button type="button" class="btn" id="toStep3" disabled>Pokaż wynik</button>
+      </div>
+    </div>
+
+    <div id="step3" style="display:none">
+      <span class="step-badge">Krok 3 / 3</span>
+      <h3>Wynik</h3>
+      <div id="resultBox"></div>
+      <div class="stepnav">
+        <button type="button" class="btn-ghost" id="backTo2">Zmień odpowiedzi</button>
+        <button type="button" class="btn" id="writeEmailBtn">Napisz maila za mnie</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <details id="nowBlock">
+      <summary>To robisz teraz, nie po powrocie do domu</summary>
+      <ul class="check-list">
+        <li>Idź do konduktora i poproś o opisanie sytuacji na odwrocie biletu.</li>
+        <li>Zrób zdjęcie: numer wagonu, tablica z numerem pociągu, termometr w telefonie (przy problemie z temperaturą).</li>
+        <li>Zapisz godzinę zdarzenia i swoją stację docelową.</li>
+        <li>Zachowaj bilet. Zachowaj każdy paragon za dodatkowe koszty.</li>
+      </ul>
+    </details>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Ściąga — pełny katalog</h2>
+    <p class="muted">Wszystko z sprawdzarki, w jednym miejscu, do zapisania.</p>
+    <div id="cheatsheet"></div>
+    <!-- TODO: zweryfikować terminy w aktualnym regulaminie przewoźnika -->
+    <p class="muted">Terminy sprawdź w regulaminie swojego przewoźnika.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Zasady, które zmieniają wszystko</h2>
+    <div class="tiles">
+      <div class="tile"><div class="num">01</div><h3>Konduktor pisze na bilecie.</h3><p>Nie napisał — nie było. Spór „słowo przeciwko słowu” zwykle przegrywasz.</p></div>
+      <div class="tile"><div class="num">02</div><h3>Napisz, że chcesz przelew.</h3><p>Inaczej przewoźnik może zaproponować bon. Jeśli wyraźnie zażądasz wypłaty pieniędzy — ma obowiązek ją zrealizować.</p></div>
+      <div class="tile"><div class="num">03</div><h3>30 dni ciszy działa na Twoją korzyść.</h3><p>Jeżeli przewoźnik odpowie po terminie albo nie odpowie wcale, reklamacja zostanie rozpatrzona na Twoją korzyść — dotyczy to rekompensaty finansowej.</p></div>
+      <div class="tile"><div class="num">04</div><h3>Awaria taboru to nie wymówka.</h3><p>Przewoźnik może uwolnić się od odpowiedzialności przy zdarzeniach nadzwyczajnych — ekstremalna pogoda, wypadki z udziałem osób postronnych, awarie infrastruktury. Ale samoczynna awaria taboru nie kwalifikuje się jako zdarzenie nadzwyczajne.</p></div>
+      <div class="tile"><div class="num">05</div><h3>Dwa roszczenia w jednym piśmie.</h3><p>Zryczałtowana rekompensata nie wyklucza odszkodowania za realną szkodę.</p></div>
+      <div class="tile"><div class="num">06</div><h3>Odmówili? To nie koniec.</h3><p>Rzecznik Praw Pasażera Kolei przy Prezesie UTK prowadzi bezpłatne postępowania polubowne — <a href="https://pasazer.gov.pl" target="_blank" rel="noopener">pasazer.gov.pl</a></p></div>
+    </div>
+  </div>
+</section>
+
+<section id="formSection">
+  <div class="wrap">
+    <h2>Chcesz, żebym to sprawdził za Ciebie?</h2>
+    <p class="muted">Sprawdzę Twój pociąg ręcznie i odeślę gotowe zgłoszenie do wklejenia. Za darmo, bez prowizji. Nie pośredniczę w płatności — pieniądze idą prosto od przewoźnika do Ciebie.</p>
+
+    <form id="leadForm" novalidate>
+      <div class="field">
+        <label for="f_przewoznik">Rodzaj pociągu</label>
+        <select id="f_przewoznik" name="przewoznik">
+          <option value="Dalekobieżny">Dalekobieżny</option>
+          <option value="Regionalny / osobowy">Regionalny / osobowy</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f_pociag">Pociąg / trasa</label>
+        <input type="text" id="f_pociag" name="pociag" placeholder="np. 3830 albo Katowice → Gliwice" required>
+        <p class="err" id="err_pociag">Podaj numer pociągu albo trasę.</p>
+      </div>
+      <div class="field">
+        <label for="f_data">Data podróży</label>
+        <input type="date" id="f_data" name="data" required>
+        <p class="err" id="err_data">Podaj poprawną datę (nie wcześniej niż 12 miesięcy temu, nie później niż dziś).</p>
+      </div>
+      <div class="field">
+        <label for="f_cena">Cena biletu (zł) — opcjonalnie</label>
+        <input type="number" id="f_cena" name="cena" min="0" step="0.01">
+        <p class="note" id="cenaNote" style="display:none">Przy tak niskiej cenie biletu wyliczona rekompensata może wypaść poniżej progu wypłaty ustalonego przez przewoźnika (np. w PKP Intercity próg wynosi 16 zł) — możesz jej nie otrzymać. Zapisz się mimo to: e-mail zostawiamy w bazie i może się przydać przy innych informacjach.</p>
+      </div>
+      <div class="field">
+        <label for="f_email">E-mail</label>
+        <input type="email" id="f_email" name="email" required>
+        <p class="err" id="err_email">Podaj poprawny adres e-mail.</p>
+      </div>
+      <div class="field">
+        <label id="zakresLabel">Zakres pomocy</label>
+        <div class="radio-group" role="radiogroup" aria-labelledby="zakresLabel">
+          <div class="radio-opt">
+            <input type="radio" id="zakres_diy" name="zakres" value="diy" required>
+            <label for="zakres_diy" style="margin:0;font-weight:600">
+              Przyślij mi gotowe zgłoszenie — złożę je sam
+              <br><span class="muted" style="font-weight:400">Dostaniesz tekst do wklejenia i instrukcję. Za darmo.</span>
+            </label>
+          </div>
+          <div class="radio-opt waitlist">
+            <input type="radio" id="zakres_pelna" name="zakres" value="pelna_obsluga" required>
+            <label for="zakres_pelna" style="margin:0;font-weight:600">
+              Chcę, żeby ktoś zrobił to za mnie od początku do końca <span class="tag">Lista oczekujących</span>
+              <br><span class="muted" style="font-weight:400">Zapiszę Cię na listę. Ta opcja jeszcze nie działa — odezwę się, gdy będzie gotowa, i powiem, na jakich zasadach.</span>
+            </label>
+          </div>
+        </div>
+        <p class="err" id="err_zakres">Wybierz jedną z dwóch opcji.</p>
+      </div>
+      <button type="submit" class="btn" id="submitBtn">Wyślij</button>
+      <p class="err" id="err_network" style="margin-top:14px"></p>
+    </form>
+    <div class="success-box" id="successBox" style="display:none">Dzięki. Sprawdzę Twój pociąg i odpiszę na maila.</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><strong>RODO:</strong> Administratorem danych podanych w formularzu jest <span id="adminName">OPERATOR_NAME</span> (kontakt: <a id="adminEmail" href="mailto:kontakt@example.pl">kontakt@example.pl</a>). Dane (e-mail, dane o przejeździe) służą wyłącznie do przygotowania odpowiedzi na Twoje zgłoszenie. Nie przekazujemy ich podmiotom trzecim poza sytuacją, w której sam o to poprosisz (np. przesłanie gotowego zgłoszenia do przewoźnika). Możesz zażądać usunięcia danych w każdej chwili, pisząc na adres kontaktowy.</p>
+    <p><strong>Zastrzeżenie:</strong> Ten serwis nie jest kancelarią prawną ani przewoźnikiem kolejowym i nie działa w ich imieniu. Treści mają charakter informacyjny, oparte są na wskazanych przepisach i nie stanowią porady prawnej. Ostateczną decyzję o wypłacie rekompensaty lub odszkodowania podejmuje przewoźnik. <!-- TODO: zweryfikować terminy w aktualnym regulaminie przewoźnika -->Terminy sprawdź w regulaminie swojego przewoźnika.</p>
+  </div>
+</footer>
+
+<script>
+"use strict";
+
+/* ===================== STAŁE DO PODMIANY ===================== */
+const FORM_ENDPOINT = ""; // TODO: podmień — adres, na który POST-uje formularz (np. Vercel Function / Formspree)
+const ANALYTICS_ENDPOINT = ""; // TODO: podmień — endpoint sendBeacon; puste = brak analityki
+const CONTACT_EMAIL = "kontakt@example.pl"; // TODO: podmień — adres kontaktowy / mailto fallback
+const ADMIN_NAME = "OPERATOR_NAME"; // TODO: podmień — administrator danych w rozumieniu RODO (imię/nazwisko lub nazwa)
+/* =============================================================== */
+
+document.getElementById("adminEmail").href = "mailto:" + CONTACT_EMAIL;
+document.getElementById("adminEmail").textContent = CONTACT_EMAIL;
+document.getElementById("adminName").textContent = ADMIN_NAME;
+
+/* ===================== RULES — treści prawne ===================== */
+/* Edytuj wyłącznie ten blok. Nie zmieniaj logiki renderowania poniżej. */
+const RULES = {
+  events: [
+    {id:"opoznienie_60", label:"Pociąg spóźnił się 60–119 minut na stacji docelowej"},
+    {id:"opoznienie_120", label:"Pociąg spóźnił się 120 minut lub więcej"},
+    {id:"odwolany", label:"Pociąg został odwołany"},
+    {id:"rezygnacja", label:"Zrezygnowałem/-am z przejazdu z powodu opóźnienia/odwołania"},
+    {id:"zka", label:"Był zastępczy autobus (ZKA)"},
+    {id:"utrata_przesiadki", label:"Straciłem/-am przesiadkę"},
+    {id:"nocleg", label:"Musiałem/-am nocować poza domem"},
+    {id:"klimatyzacja", label:"Nie działała klimatyzacja"},
+    {id:"ogrzewanie", label:"Nie działało ogrzewanie"},
+    {id:"brak_miejsca_mimo_rezerwacji", label:"Brak miejsca mimo rezerwacji"},
+    {id:"nizsza_klasa", label:"Jechałem/-am wagonem niższej klasy niż wykupiona"},
+    {id:"brak_udogodnien", label:"Brak udogodnień: gniazdko / WiFi / WARS / rower"},
+    {id:"koszty", label:"Poniosłem/-am dodatkowe koszty"}
+  ],
+
+  regionalWarning: {
+    title: "Zryczałtowana rekompensata 25%/50% Ci NIE przysługuje.",
+    body: [
+      "Polska bezterminowo wyłączyła stosowanie tych rekompensat dla pociągów miejskich, podmiejskich i regionalnych — na podstawie art. 2 ust. 6 rozporządzenia (UE) 2021/782 i art. 3a ustawy o transporcie kolejowym. Dotyczy to pociągów osobowych wszystkich przewoźników regionalnych.",
+      "Ale to nie znaczy, że nie masz nic. Pasażerowie wszystkich rodzajów pociągów mogą dochodzić odszkodowania za naprawę szkody powstałej wskutek opóźnienia — na podstawie art. 471 Kodeksu cywilnego i art. 62 ust. 2 Prawa przewozowego. Musisz jednak udowodnić realną stratę, np. rachunkami mającymi związek przyczynowy z opóźnieniem. Przewoźnik rozpatruje takie sprawy uznaniowo: może roszczenie odrzucić, obniżyć albo uznać w całości."
+    ]
+  },
+
+  // karty ścieżki A (dalekobieżny)
+  cardsA: [
+    {
+      id:"opoznienie_60",
+      requires: s => s.opoznienie_60,
+      title:"Rekompensata 25% ceny biletu",
+      benefit:"Opóźnienie 60–119 minut na Twojej stacji docelowej. Podstawa: art. 19 rozporządzenia (UE) 2021/782.",
+      evidence:"Bilet albo dane identyfikujące przejazd. Nie musisz mieć poświadczenia opóźnienia — przewoźnik ma te dane u siebie."
+    },
+    {
+      id:"opoznienie_120",
+      requires: s => s.opoznienie_120,
+      title:"Rekompensata 50% ceny biletu",
+      benefit:"Opóźnienie 120 minut lub więcej na Twojej stacji docelowej. Podstawa: art. 19 rozporządzenia (UE) 2021/782.",
+      evidence:"Bilet albo dane identyfikujące przejazd. Nie musisz mieć poświadczenia opóźnienia — przewoźnik ma te dane u siebie."
+    },
+    {
+      id:"prog_minimalny",
+      requires: s => s.opoznienie_60 || s.opoznienie_120,
+      title:"Uwaga: próg minimalny",
+      benefit:"Jeśli wyliczona kwota wychodzi poniżej progu ustalonego przez przewoźnika, wypłaty nie będzie. Próg nie może przekraczać 4 euro — w PKP Intercity wynosi 16 zł.",
+      evidence:null
+    },
+    {
+      id:"rezygnacja",
+      requires: s => s.rezygnacja,
+      title:"Zwrot do 100% ceny biletu",
+      benefit:"Gdy rezygnujesz z przejazdu z powodu dużego opóźnienia lub odwołania.",
+      evidence:"Bilet."
+    },
+    {
+      id:"odwolany",
+      requires: s => s.odwolany,
+      title:"Zwrot ceny biletu albo zmiana trasy do celu",
+      benefit:"Wybór należy do Ciebie.",
+      evidence:"Bilet."
+    }
+  ],
+
+  // karty wspólne dla A i B
+  cardsCommon: [
+    {
+      id:"zka",
+      requires: s => s.zka,
+      title:"Zwrot 100% ceny biletu",
+      benefit:"Nie masz obowiązku wsiadać do autobusu zastępczego. Jeśli zrezygnujesz, przewoźnik zwraca 100% ceny biletu — niezależnie od tego, czy zawinił. Uwaga: dotyczy nieplanowanego transportu zastępczego. Przy komunikacji zastępczej ogłoszonej wcześniej na czas remontu rezygnacja może wiązać się z potrąceniem odstępnego.",
+      evidence:"Bilet."
+    },
+    {
+      id:"utrata_przesiadki_nocleg",
+      requires: s => s.utrata_przesiadki || s.nocleg,
+      title:"Koszty noclegu i powiadomienia",
+      benefit:"Jeśli wskutek odwołania, opóźnienia albo utraty połączenia nie da się kontynuować podróży tego samego dnia, przewoźnik odpowiada za szkody — w tym racjonalnie uzasadnione koszty noclegu oraz koszty powiadomienia osób, które czekały na Ciebie w miejscu docelowym. Podstawa: art. 32 ust. 1 załącznika nr 1 do rozporządzenia.",
+      evidence:"Rachunki."
+    },
+    {
+      id:"opieka",
+      requires: s => s.opoznienie_60 || s.opoznienie_120 || s.odwolany,
+      title:"Prawo do opieki",
+      benefit:"Przy opóźnieniu lub odwołaniu od 60 minut: napoje i posiłki adekwatne do czasu oczekiwania. Gdy konieczny jest nocleg — zakwaterowanie oraz transport do miejsca zakwaterowania. Podstawa: art. 20.",
+      evidence:null
+    },
+    {
+      id:"klimatyzacja",
+      requires: s => s.klimatyzacja,
+      title:"Bon zwykle 25% ceny biletu",
+      benefit:"Dotyczy pociągów kategorii EIC i IC PKP Intercity. Według UTK przy pozytywnym rozpatrzeniu przewoźnik może przyznać bon o wartości 25% ceny biletu — każda sprawa jest oceniana indywidualnie, to nie jest sztywna stawka z regulaminu. Brak klimatyzacji nie daje pełnego zwrotu, jeśli podróż się odbyła.",
+      evidence:"Numer pociągu, numer wagonu, data, opis. Zdjęcie termometru w telefonie. Najlepiej adnotacja konduktora.",
+      hint:"Wskazówka UTK: temperatura w klimatyzowanym wagonie powinna wynosić 18–25°C zimą, a latem być o 7°C niższa niż na zewnątrz."
+    },
+    {
+      id:"ogrzewanie_miejsce",
+      requires: s => s.ogrzewanie || s.brak_miejsca_mimo_rezerwacji,
+      title:"Reklamacja — wymagana adnotacja konduktora",
+      benefit:"W takich sytuacjach zgłoś się do konduktora, żeby opisał zdarzenie na odwrocie biletu.",
+      evidence:"Adnotacja konduktora na bilecie. Bez niej to słowo przeciwko słowu."
+    },
+    {
+      id:"nizsza_klasa",
+      requires: s => s.nizsza_klasa,
+      title:"Zwrot różnicy w cenie",
+      benefit:"Jeśli jedziesz wagonem niższej klasy niż wykupiona.",
+      evidence:"Bilet."
+    },
+    {
+      id:"brak_udogodnien",
+      requires: s => s.brak_udogodnien,
+      title:"Reklamacja z tytułu nienależytego wykonania umowy",
+      benefit:"Jeśli wagon jest pozbawiony udogodnień, które zgodnie z rozkładem jazdy powinny być dostępne, a ich brak jest szczególnie uciążliwy.",
+      evidence:"Opis, zdjęcia, numer wagonu."
+    },
+    {
+      id:"koszty",
+      requires: s => s.koszty,
+      title:"Odszkodowanie za rzeczywistą szkodę",
+      benefit:"Dochodzone na podstawie art. 471 Kodeksu cywilnego i art. 62 ust. 2 Prawa przewozowego. Uzyskanie zryczałtowanej rekompensaty z rozporządzenia NIE wyklucza tego roszczenia — oba można zawrzeć w jednym piśmie reklamacyjnym.",
+      evidence:"Zachowaj wszystko: bilet autobusowy, rachunek za nieplanowany nocleg, niewykorzystane bilety."
+    }
+  ]
+};
+/* =============================================================== */
+
+/* ===================== ANALITYKA ===================== */
+function track(name){
+  if(!ANALYTICS_ENDPOINT) return;
+  try{
+    const data = JSON.stringify({event:name, t:Date.now(), path:location.pathname});
+    navigator.sendBeacon(ANALYTICS_ENDPOINT, new Blob([data], {type:"application/json"}));
+  }catch(e){}
+}
+track("view");
+let scrolled50 = false;
+window.addEventListener("scroll", function(){
+  if(scrolled50) return;
+  const pct = (window.scrollY + window.innerHeight) / document.body.scrollHeight;
+  if(pct > 0.5){ scrolled50 = true; track("scroll_50"); }
+}, {passive:true});
+
+/* ===================== STAN SPRAWDZARKI ===================== */
+const state = { path:null, events:{} };
+let checkerStarted = false;
+
+const eventGrid = document.getElementById("eventGrid");
+RULES.events.forEach(function(ev){
+  const div = document.createElement("div");
+  div.className = "check-item";
+  const cb = document.createElement("input");
+  cb.type = "checkbox"; cb.id = "ev_"+ev.id; cb.value = ev.id;
+  const lab = document.createElement("label");
+  lab.htmlFor = cb.id; lab.textContent = ev.label;
+  div.appendChild(cb); div.appendChild(lab);
+  eventGrid.appendChild(div);
+  cb.addEventListener("change", function(){
+    state.events[ev.id] = cb.checked;
+    updateStep3Button();
+  });
+});
+
+function updateStep3Button(){
+  const any = Object.keys(state.events).some(k => state.events[k]);
+  document.getElementById("toStep3").disabled = !any;
+}
+
+function markCheckerStart(){
+  if(!checkerStarted){ checkerStarted = true; track("checker_start"); }
+}
+document.getElementById("ctaHero").addEventListener("click", markCheckerStart);
+document.getElementById("ctaTop").addEventListener("click", markCheckerStart);
+
+function selectPath(p){
+  state.path = p;
+  document.getElementById("choiceA").classList.toggle("active", p==="A");
+  document.getElementById("choiceB").classList.toggle("active", p==="B");
+  track(p==="A" ? "checker_carrier_A" : "checker_carrier_B");
+  document.getElementById("step1").style.display = "none";
+  document.getElementById("step2").style.display = "";
+  const sel = document.getElementById("f_przewoznik");
+  sel.value = p==="A" ? "Dalekobieżny" : "Regionalny / osobowy";
+  document.getElementById("step2").scrollIntoView({behavior:"smooth", block:"start"});
+}
+document.getElementById("choiceA").addEventListener("click", function(){
+  markCheckerStart();
+  selectPath("A");
+});
+document.getElementById("choiceB").addEventListener("click", function(){
+  markCheckerStart();
+  selectPath("B");
+});
+document.getElementById("backTo1").addEventListener("click", function(){
+  document.getElementById("step2").style.display = "none";
+  document.getElementById("step1").style.display = "";
+});
+document.getElementById("backTo2").addEventListener("click", function(){
+  document.getElementById("step3").style.display = "none";
+  document.getElementById("step2").style.display = "";
+});
+
+function cardHtml(c){
+  let html = '<div class="card"><h3>'+esc(c.title)+'</h3><p>'+esc(c.benefit)+'</p>';
+  if(c.hint) html += '<p class="muted">'+esc(c.hint)+'</p>';
+  if(c.evidence) html += '<p class="evi"><b>Dowód: </b>'+esc(c.evidence)+'</p>';
+  html += '</div>';
+  return html;
+}
+function esc(s){
+  return String(s).replace(/[&<>"']/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+  });
+}
+
+document.getElementById("toStep3").addEventListener("click", function(){
+  const box = document.getElementById("resultBox");
+  let html = "";
+  let matchCount = 0;
+
+  if(state.path === "B"){
+    html += '<div class="warn-block"><p><strong>'+esc(RULES.regionalWarning.title)+'</strong></p>';
+    RULES.regionalWarning.body.forEach(function(p){ html += "<p>"+esc(p)+"</p>"; });
+    html += "</div>";
+  }
+
+  const list = state.path === "A" ? RULES.cardsA.concat(RULES.cardsCommon) : RULES.cardsCommon;
+  list.forEach(function(c){
+    if(c.requires(state.events)){
+      html += cardHtml(c);
+      matchCount++;
+    }
+  });
+
+  if(matchCount === 0 && state.path !== "B"){
+    html += '<p class="result-empty">Brak dodatkowych kart dla zaznaczonych zdarzeń.</p>';
+  }
+
+  box.innerHTML = html;
+  document.getElementById("step2").style.display = "none";
+  document.getElementById("step3").style.display = "";
+  document.getElementById("step3").scrollIntoView({behavior:"smooth", block:"start"});
+  track("checker_result");
+});
+
+document.getElementById("writeEmailBtn").addEventListener("click", function(){
+  track("checker_cta_form");
+  document.getElementById("formSection").scrollIntoView({behavior:"smooth", block:"start"});
+  const email = document.getElementById("f_email");
+  if(email) setTimeout(function(){ email.focus(); }, 400);
+});
+
+/* ===================== ŚCIĄGA (generowana z RULES) ===================== */
+(function renderCheatsheet(){
+  const el = document.getElementById("cheatsheet");
+  function table(caption, rows){
+    let h = '<div class="table-scroll"><table><caption>'+esc(caption)+'</caption><thead><tr><th>Sytuacja</th><th>Co Ci przysługuje</th><th>Dowód</th></tr></thead><tbody>';
+    rows.forEach(function(c){
+      h += "<tr><td>"+esc(c.title)+"</td><td>"+esc(c.benefit)+(c.hint?"<br><em>"+esc(c.hint)+"</em>":"")+"</td><td>"+esc(c.evidence || "—")+"</td></tr>";
+    });
+    h += "</tbody></table></div>";
+    return h;
+  }
+  let html = table("Dalekobieżny (EIP/EIC/IC/TLK/interREGIO/ŁKA Sprinter/międzynarodowy)", RULES.cardsA);
+  html += "<p><strong>Regionalny / osobowy:</strong> "+esc(RULES.regionalWarning.title)+"</p>";
+  html += table("Wspólne dla obu kategorii pociągów", RULES.cardsCommon);
+  el.innerHTML = html;
+})();
+
+/* ===================== FORMULARZ ===================== */
+const form = document.getElementById("leadForm");
+let formStarted = false;
+form.addEventListener("focusin", function(){
+  if(!formStarted){ formStarted = true; track("form_start"); }
+}, {once:false});
+
+const today = new Date();
+const dEl = document.getElementById("f_data");
+const maxD = today.toISOString().slice(0,10);
+const minDate = new Date(today); minDate.setMonth(minDate.getMonth() - 12);
+const minD = minDate.toISOString().slice(0,10);
+dEl.max = maxD; dEl.min = minD;
+
+const PROG_MINIMALNY_ZL = 16; // ten sam próg co w RULES.cardsA (prog_minimalny) — przykład PKP Intercity
+const cenaEl = document.getElementById("f_cena");
+const cenaNote = document.getElementById("cenaNote");
+cenaEl.addEventListener("input", function(){
+  const v = parseFloat(cenaEl.value);
+  cenaNote.style.display = (cenaEl.value !== "" && !isNaN(v) && v < PROG_MINIMALNY_ZL) ? "" : "none";
+});
+
+function setErr(id, show){
+  document.getElementById(id).classList.toggle("show", show);
+}
+
+form.addEventListener("submit", function(e){
+  e.preventDefault();
+  let ok = true;
+
+  const pociag = document.getElementById("f_pociag").value.trim();
+  if(!pociag){ setErr("err_pociag", true); ok = false; } else setErr("err_pociag", false);
+
+  const dataVal = dEl.value;
+  if(!dataVal || dataVal > maxD || dataVal < minD){ setErr("err_data", true); ok = false; } else setErr("err_data", false);
+
+  const email = document.getElementById("f_email").value.trim();
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if(!emailOk){ setErr("err_email", true); ok = false; } else setErr("err_email", false);
+
+  const zakresEl = form.querySelector('input[name="zakres"]:checked');
+  if(!zakresEl){ setErr("err_zakres", true); ok = false; } else setErr("err_zakres", false);
+
+  if(!ok) return;
+
+  const payload = {
+    przewoznik: document.getElementById("f_przewoznik").value,
+    pociag: pociag,
+    data: dataVal,
+    cena: document.getElementById("f_cena").value || null,
+    email: email,
+    zakres: zakresEl.value
+  };
+
+  const btn = document.getElementById("submitBtn");
+  btn.disabled = true; btn.textContent = "Wysyłanie...";
+  document.getElementById("err_network").textContent = "";
+
+  track("form_submit");
+  track(zakresEl.value === "diy" ? "form_submit_diy" : "form_submit_pelna_obsluga");
+
+  if(!FORM_ENDPOINT){
+    finishSuccess();
+    return;
+  }
+
+  fetch(FORM_ENDPOINT, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify(payload)
+  }).then(function(r){
+    if(!r.ok) throw new Error("bad status");
+    finishSuccess();
+  }).catch(function(){
+    btn.disabled = false; btn.textContent = "Wyślij";
+    document.getElementById("err_network").innerHTML =
+      'Nie udało się wysłać przez sieć. Napisz do mnie bezpośrednio: '+
+      '<a href="mailto:'+CONTACT_EMAIL+'?subject=Zgloszenie&body='+encodeURIComponent(JSON.stringify(payload))+'">'+CONTACT_EMAIL+'</a>';
+  });
+
+  function finishSuccess(){
+    form.style.display = "none";
+    document.getElementById("successBox").style.display = "";
+  }
+});
+</script>
+</body>
+</html>
